@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+*.sqlite
+src/**/*.js
+src/**/*.d.ts
+src/**/*.js.map
+src/**/*.d.ts.map
+
+# 開發機殘留設定擋 (非運行必須)
+eslint.config.mjs
+jest.config.js
+.eslintcache
+*.log
+coverage/

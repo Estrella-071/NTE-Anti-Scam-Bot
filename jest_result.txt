@@ -1,0 +1,45 @@
+  console.warn
+    User#1234 觸發警報: 2026/03/01 19:42 短時間內高頻率發送訊息，0.0 秒內共發送了 4 則。0⮕1 星
+
+    [0m [90m 205 |[39m     updateUserStars(userId[33m,[39m newStars)[33m;[39m
+     [90m 206 |[39m
+    [31m[1m>[22m[39m[90m 207 |[39m     console[33m.[39mwarn([32m`${triggerMessage.author.tag} 觸發警報: ${reason}。${oldStars}⮕${newStars} 星`[39m)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 208 |[39m
+     [90m 209 |[39m     [36mconst[39m messagesByChannel [33m=[39m [36mnew[39m [33mMap[39m[33m<[39m[33mstring[39m[33m,[39m string[][33m>[39m()[33m;[39m
+     [90m 210 |[39m     [36mfor[39m ([36mconst[39m msg [36mof[39m messagesToDelete) {[0m
+
+      at executePunishment (src/patrol.ts:207:13)
+      at patrolExecute (src/patrol.ts:187:15)
+      at Object.<anonymous> (src/patrol.spec.ts:125:28)
+
+  console.warn
+    User#1234 觸發警報: 2026/03/01 19:42 跨頻道發送重複訊息，共 3 個頻道。0⮕4 星
+
+    [0m [90m 205 |[39m     updateUserStars(userId[33m,[39m newStars)[33m;[39m
+     [90m 206 |[39m
+    [31m[1m>[22m[39m[90m 207 |[39m     console[33m.[39mwarn([32m`${triggerMessage.author.tag} 觸發警報: ${reason}。${oldStars}⮕${newStars} 星`[39m)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 208 |[39m
+     [90m 209 |[39m     [36mconst[39m messagesByChannel [33m=[39m [36mnew[39m [33mMap[39m[33m<[39m[33mstring[39m[33m,[39m string[][33m>[39m()[33m;[39m
+     [90m 210 |[39m     [36mfor[39m ([36mconst[39m msg [36mof[39m messagesToDelete) {[0m
+
+      at executePunishment (src/patrol.ts:207:13)
+      at patrolExecute (src/patrol.ts:187:15)
+      at Object.<anonymous> (src/patrol.spec.ts:194:28)
+
+  console.warn
+    User#1234 觸發警報: 2026/03/01 19:42 跨頻道發送重複訊息，共 3 個頻道。0⮕4 星
+
+    [0m [90m 205 |[39m     updateUserStars(userId[33m,[39m newStars)[33m;[39m
+     [90m 206 |[39m
+    [31m[1m>[22m[39m[90m 207 |[39m     console[33m.[39mwarn([32m`${triggerMessage.author.tag} 觸發警報: ${reason}。${oldStars}⮕${newStars} 星`[39m)[33m;[39m
+     [90m     |[39m             [31m[1m^[22m[39m
+     [90m 208 |[39m
+     [90m 209 |[39m     [36mconst[39m messagesByChannel [33m=[39m [36mnew[39m [33mMap[39m[33m<[39m[33mstring[39m[33m,[39m string[][33m>[39m()[33m;[39m
+     [90m 210 |[39m     [36mfor[39m ([36mconst[39m msg [36mof[39m messagesToDelete) {[0m
+
+      at executePunishment (src/patrol.ts:207:13)
+      at patrolExecute (src/patrol.ts:187:15)
+      at Object.<anonymous> (src/patrol.spec.ts:213:28)
+
