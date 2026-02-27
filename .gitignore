@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.env
+*.sqlite
+
+src/**/*.js
+src/**/*.d.ts
+src/**/*.js.map
+src/**/*.d.ts.map
+
+# 開發機殘留設定擋 (非運行必須)
+eslint.config.mjs
+jest.config.js
+.eslintcache
+*.log
+coverage/
+
+# 除錯 / 測試殘留輸出
+*.txt
+out.json
+
+# DisCloud 部署設定 (改用 Render 後不需要)
+discloud.config
+*.zip
