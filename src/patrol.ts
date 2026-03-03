@@ -33,6 +33,13 @@ interface Fingerprint {
 const hotBuckets = new Map<string, LeakyBucket>();
 const slowTrackers = new Map<string, Fingerprint>();
 
+// 測試用：清除模組內部狀態
+export const _resetStateForTest = () => {
+    lastSeen.clear();
+    hotBuckets.clear();
+    slowTrackers.clear();
+};
+
 const leakWater = (bucket: LeakyBucket, now: number) => {
     const leaked = ((now - bucket.lastUpdated) / 1000) * LEAK_RATE_PER_SEC;
     bucket.waterLevel = Math.max(0, bucket.waterLevel - leaked);
@@ -86,8 +93,8 @@ export const patrolExecute = async (message: Message, client: Client) => {
 
     if (!contentHash) return;
 
-    // IME 去重：同一使用者在同一頻道、極短時間內送出完全相同內容，視為輸入法重複觸發
-    // 僅限同頻道比對，避免攔截跨頻道 API 攻擊的偵測
+    // IME 去重：同頻道 500ms 內重複內容跳過（輸入法連按 Enter）
+    // 不擋跨頻道，那邊交給 API 異常偵測處理
     const msgTs = message.createdTimestamp;
     const prev = lastSeen.get(userId);
     if (prev && prev.hash === contentHash && prev.channelId === message.channelId && (msgTs - prev.ts) < IME_DEDUP_MS) {
