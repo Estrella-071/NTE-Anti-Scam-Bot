@@ -1,6 +1,5 @@
 import { createClient, type Client as LibsqlClient } from '@libsql/client';
 
-/** Turso 雲端 SQLite 連線實例 */
 let db: LibsqlClient;
 
 export interface UserRecord {
@@ -9,12 +8,7 @@ export interface UserRecord {
   last_updated: number;
 }
 
-/**
- * 初始化 Turso 雲端資料庫連線，並建立所需的資料表
- * 支援兩種模式：
- * - 雲端模式：透過 TURSO_URL + TURSO_AUTH_TOKEN 連線到 Turso
- * - 本地模式（測試用）：若未設定 TURSO_URL，則使用 file: 本地檔案
- */
+// 初始化 DB，沒設 TURSO_URL 時會用本機檔案
 export const initDB = async () => {
   if (!db) {
     const url = process.env.TURSO_URL || 'file:patrol.sqlite';
@@ -91,10 +85,7 @@ export const updateGuildSetting = async (guildId: string, key: 'report_channel_i
   });
 };
 
-/**
- * 提供測試用的 DB 實例注入接口
- * @internal 僅供 db.spec.ts 使用
- */
+// 測試用：注入替代的 DB 實例
 export const _setDbForTest = (testClient: LibsqlClient) => {
   db = testClient;
 };
