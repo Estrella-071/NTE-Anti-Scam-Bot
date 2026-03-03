@@ -1,5 +1,5 @@
 import { Client, Message } from 'discord.js';
-import { patrolExecute } from './patrol';
+import { patrolExecute, _resetStateForTest } from './patrol';
 import * as db from './db';
 import * as report from './report';
 
@@ -17,6 +17,7 @@ describe('PatrolEngine - 快速洗版偵測', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         jest.useFakeTimers();
+        _resetStateForTest();
 
         mockBulkDelete = jest.fn().mockResolvedValue(undefined);
         const mockChannel = {

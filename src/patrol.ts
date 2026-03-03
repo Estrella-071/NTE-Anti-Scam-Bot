@@ -33,6 +33,16 @@ interface Fingerprint {
 const hotBuckets = new Map<string, LeakyBucket>();
 const slowTrackers = new Map<string, Fingerprint>();
 
+/**
+ * 清除所有模組級狀態（lastSeen、hotBuckets、slowTrackers）
+ * @internal 僅供 patrol.spec.ts 在 beforeEach 中使用，避免測試間狀態汙染
+ */
+export const _resetStateForTest = () => {
+    lastSeen.clear();
+    hotBuckets.clear();
+    slowTrackers.clear();
+};
+
 const leakWater = (bucket: LeakyBucket, now: number) => {
     const leaked = ((now - bucket.lastUpdated) / 1000) * LEAK_RATE_PER_SEC;
     bucket.waterLevel = Math.max(0, bucket.waterLevel - leaked);
