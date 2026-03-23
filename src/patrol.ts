@@ -255,11 +255,16 @@ const executePunishment = async (
         Array.from(messagesByChannel.entries()).map(async ([channelId, msgIds]) => {
             try {
                 const channel = await client.channels.fetch(channelId);
-                if (channel && 'bulkDelete' in channel && typeof channel.bulkDelete === 'function') {
+                if (!channel?.isTextBased()) return;
+
+                if (msgIds.length === 1) {
+                    const fetched = await channel.messages.fetch(msgIds[0]).catch(() => null);
+                    if (fetched) await fetched.delete().catch(() => { });
+                } else if ('bulkDelete' in channel && typeof channel.bulkDelete === 'function') {
                     await channel.bulkDelete(msgIds).catch((err: Error) => {
                         console.warn(`bulkDelete 失敗 (頻道 ${channelId}):`, err.message);
                     });
-                } else if (channel?.isTextBased()) {
+                } else {
                     for (const id of msgIds) {
                         const fetched = await channel.messages.fetch(id).catch(() => null);
                         if (fetched) await fetched.delete().catch(() => { });
