@@ -74,33 +74,20 @@ export const handleInteraction = async (interaction: Interaction) => {
     if (interaction.isChatInputCommand()) {
         if (interaction.commandName === 'setup') {
             if (!interaction.guildId) return;
-            try {
-                await interaction.deferReply({ ephemeral: true });
-                const payload = await getSetupMessagePayload(interaction.guildId);
-                await interaction.editReply(payload);
-            } catch (err) {
-                console.error('執行 /setup 時捕捉到錯誤:', err);
-                await interaction.editReply({ content: '資料庫讀取失敗或發生非預期錯誤，請稍後重試。' }).catch(() => {});
-            }
+            await interaction.reply(await getSetupMessagePayload(interaction.guildId));
         } else if (interaction.commandName === 'reset') {
-            try {
-                await interaction.deferReply({ ephemeral: true });
-                const targetUser = interaction.options.getUser('user', true);
-                const record = await getUserRecord(targetUser.id);
-                const oldStars = record?.stars ?? 0;
+            const targetUser = interaction.options.getUser('user', true);
+            const record = await getUserRecord(targetUser.id);
+            const oldStars = record?.stars ?? 0;
 
-                if (oldStars === 0) {
-                    await interaction.editReply({ content: `<@${targetUser.id}> 目前沒有通緝值，不需要清空。` });
-                    return;
-                }
-
-                await updateUserStars(targetUser.id, 0);
-                console.log(`${interaction.user.tag} 將 ${targetUser.tag} 的通緝值從 ${oldStars} 星清空為 0 星`);
-                await interaction.editReply({ content: `已將 <@${targetUser.id}> 的通緝值從 ${oldStars} ⭐ 清空為 0 ⭐` });
-            } catch (err) {
-                console.error('執行 /reset 時捕捉到錯誤:', err);
-                await interaction.editReply({ content: '執行失敗，請檢查資料庫連線或相關權限。' }).catch(() => {});
+            if (oldStars === 0) {
+                await interaction.reply({ content: `<@${targetUser.id}> 目前沒有通緝值，不需要清空。`, ephemeral: true });
+                return;
             }
+
+            await updateUserStars(targetUser.id, 0);
+            console.log(`${interaction.user.tag} 將 ${targetUser.tag} 的通緝值從 ${oldStars} 星清空為 0 星`);
+            await interaction.reply({ content: `已將 <@${targetUser.id}> 的通緝值從 ${oldStars} ⭐ 清空為 0 ⭐`, ephemeral: true });
         }
         return;
     }
