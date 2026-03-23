@@ -196,7 +196,7 @@ describe('PatrolEngine - 快速洗版偵測', () => {
         expect(db.updateUserStars).toHaveBeenCalledWith(msg1.author.id, 4);
 
         const fetched = await msg3.guild?.members.fetch(msg3.author.id);
-        expect(fetched?.timeout).toHaveBeenCalledWith(28 * 24 * 60 * 60 * 1000);
+        expect(fetched?.timeout).toHaveBeenCalledWith(1 * 24 * 60 * 60 * 1000);
     });
 
     it('跨頻道洗版的 sendReport 應包含所有觸發頻道', async () => {

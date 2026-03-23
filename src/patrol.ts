@@ -8,7 +8,7 @@ const SLOW_TRACK_EXPIRY_MS = 60 * 60 * 1000;
 const MAX_CONTENT_LENGTH = 500;
 
 const TIMEOUT_TIERS_MS = [0, 5, 15, 60].map((m) => m * 60 * 1000);
-const BAN_TIMEOUT_MS = 28 * 24 * 60 * 60 * 1000;
+const MAX_TIMEOUT_MS = 1 * 24 * 60 * 60 * 1000;
 const IME_DEDUP_MS = 500;
 const MIN_SLOW_CONTENT_LEN = 10;
 
@@ -239,8 +239,8 @@ const executePunishment = async (
     if (member?.manageable) {
         try {
             if (newStars === 4) {
-                await member.timeout(BAN_TIMEOUT_MS);
-                actionTaken = '永久禁言 (28天，待人工審核)';
+                await member.timeout(MAX_TIMEOUT_MS);
+                actionTaken = '禁言 (1天，待人工審核)';
             } else if (newStars > 0 && TIMEOUT_TIERS_MS[newStars] > 0) {
                 await member.timeout(TIMEOUT_TIERS_MS[newStars]);
                 actionTaken = `刪除訊息 + 禁言 ${TIMEOUT_TIERS_MS[newStars] / 60000} 分鐘`;

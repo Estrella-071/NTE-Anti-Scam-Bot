@@ -96,7 +96,7 @@ export const handleInteraction = async (interaction: Interaction) => {
         if (!interaction.guildId || !interaction.member) return;
 
         const permissions = typeof interaction.member.permissions === 'string' ? null : interaction.member.permissions;
-        if (!permissions || (!permissions.has('Administrator') && !permissions.has('BanMembers'))) {
+        if (!permissions || (!permissions.has('Administrator') && !permissions.has('ModerateMembers'))) {
             await interaction.reply({ content: '權限不足。', ephemeral: true }).catch(() => { });
             return;
         }
@@ -126,7 +126,7 @@ export const handleInteraction = async (interaction: Interaction) => {
     if (!guild || !member) return;
 
     const permissions = typeof member.permissions === 'string' ? null : member.permissions;
-    if (permissions && !permissions.has('Administrator') && !permissions.has('BanMembers')) {
+    if (permissions && !permissions.has('Administrator') && !permissions.has('ModerateMembers')) {
         await interaction.deferUpdate().catch(() => { });
         return;
     }
@@ -146,10 +146,6 @@ export const handleInteraction = async (interaction: Interaction) => {
                     .setLabel('解除禁言')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
-                    .setCustomId(`chooseban_${targetId}_${msgId}_${channelId}`)
-                    .setLabel('永久停權')
-                    .setStyle(ButtonStyle.Danger),
-                new ButtonBuilder()
                     .setCustomId('cancelaction')
                     .setLabel('取消')
                     .setStyle(ButtonStyle.Secondary),
@@ -163,17 +159,14 @@ export const handleInteraction = async (interaction: Interaction) => {
             return;
         }
 
-        if (action === 'chooseuntimeout' || action === 'chooseban') {
+        if (action === 'chooseuntimeout') {
             const targetId = parts[1];
             const msgId = parts[2];
             const channelId = parts[3];
 
-            const isBan = action === 'chooseban';
-            const confirmCustomId = isBan
-                ? `confirmban_${targetId}_${msgId}_${channelId}`
-                : `confirmuntimeout_${targetId}_${msgId}_${channelId}`;
-            const labelText = isBan ? '確認永久封鎖' : '確認解除禁言';
-            const confirmStyle = isBan ? ButtonStyle.Danger : ButtonStyle.Success;
+            const confirmCustomId = `confirmuntimeout_${targetId}_${msgId}_${channelId}`;
+            const labelText = '確認解除禁言';
+            const confirmStyle = ButtonStyle.Success;
 
             const confirmRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
@@ -187,17 +180,16 @@ export const handleInteraction = async (interaction: Interaction) => {
             );
 
             await interaction.update({
-                content: `確定要將 <@${targetId}> ${isBan ? '永久停權' : '解除禁言'}嗎？\n此操作無法自動撤銷。`,
+                content: `確定要將 <@${targetId}> 解除禁言嗎？\n此操作無法自動撤銷。`,
                 components: [confirmRow],
             });
             return;
         }
 
-        if (action === 'confirmuntimeout' || action === 'confirmban') {
+        if (action === 'confirmuntimeout') {
             const targetId = parts[1];
             const origMsgId = parts[2];
             const origChannelId = parts[3];
-            const isBan = action === 'confirmban';
 
             const targetMember = await guild.members.fetch(targetId).catch(() => null);
             if (!targetMember) {
@@ -205,20 +197,13 @@ export const handleInteraction = async (interaction: Interaction) => {
                 return;
             }
 
-            if (isBan) {
-                await targetMember.ban({ reason: '管理員透過巡哨鼠鼠執行永久封鎖' });
-                console.log(`${targetId} 被 ${interaction.user.tag} 永久封鎖`);
-            } else {
-                await targetMember.timeout(null, '管理員透過巡哨鼠鼠執行解除禁言');
-                console.log(`${targetId} 被 ${interaction.user.tag} 解除禁言`);
-            }
+            await targetMember.timeout(null, '管理員透過巡哨鼠鼠執行解除禁言');
+            console.log(`${targetId} 被 ${interaction.user.tag} 解除禁言`);
 
-            const successText = isBan ? '已執行永久封鎖。' : '已執行解除禁言。';
+            const successText = '已執行解除禁言。';
             await interaction.update({ content: successText, components: [] });
 
-            const resultText = isBan
-                ? `懲罰方式： 已將 <@${targetId}> 永久封鎖（由 <@${interaction.user.id}> 操作）`
-                : `處理結果： 已解除 <@${targetId}> 的禁言（由 <@${interaction.user.id}> 操作）`;
+            const resultText = `處理結果： 已解除 <@${targetId}> 的禁言（由 <@${interaction.user.id}> 操作）`;
 
             try {
                 const origChannel = await guild.client.channels.fetch(origChannelId) as TextChannel;
