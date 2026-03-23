@@ -66,7 +66,7 @@ const getSetupMessagePayload = async (guildId: string) => {
             new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(roleSelect),
             new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(userSelect),
         ],
-        ephemeral: true,
+        flags: 64,
     };
 };
 
@@ -74,20 +74,23 @@ export const handleInteraction = async (interaction: Interaction) => {
     if (interaction.isChatInputCommand()) {
         if (interaction.commandName === 'setup') {
             if (!interaction.guildId) return;
-            await interaction.reply(await getSetupMessagePayload(interaction.guildId));
+            await interaction.deferReply({ flags: 64 });
+            const payload = await getSetupMessagePayload(interaction.guildId);
+            await interaction.editReply(payload);
         } else if (interaction.commandName === 'reset') {
+            await interaction.deferReply({ flags: 64 });
             const targetUser = interaction.options.getUser('user', true);
             const record = await getUserRecord(targetUser.id);
             const oldStars = record?.stars ?? 0;
 
             if (oldStars === 0) {
-                await interaction.reply({ content: `<@${targetUser.id}> 目前沒有通緝值，不需要清空。`, ephemeral: true });
+                await interaction.editReply({ content: `<@${targetUser.id}> 目前沒有通緝值，不需要清空。` });
                 return;
             }
 
             await updateUserStars(targetUser.id, 0);
             console.log(`${interaction.user.tag} 將 ${targetUser.tag} 的通緝值從 ${oldStars} 星清空為 0 星`);
-            await interaction.reply({ content: `已將 <@${targetUser.id}> 的通緝值從 ${oldStars} ⭐ 清空為 0 ⭐`, ephemeral: true });
+            await interaction.editReply({ content: `已將 <@${targetUser.id}> 的通緝值從 ${oldStars} ⭐ 清空為 0 ⭐` });
         }
         return;
     }
@@ -97,7 +100,7 @@ export const handleInteraction = async (interaction: Interaction) => {
 
         const permissions = typeof interaction.member.permissions === 'string' ? null : interaction.member.permissions;
         if (!permissions || (!permissions.has('Administrator') && !permissions.has('ModerateMembers'))) {
-            await interaction.reply({ content: '權限不足。', ephemeral: true }).catch(() => { });
+            await interaction.reply({ content: '權限不足。', flags: 64 }).catch(() => { });
             return;
         }
 
@@ -115,7 +118,7 @@ export const handleInteraction = async (interaction: Interaction) => {
             await interaction.update(await getSetupMessagePayload(interaction.guildId));
         } catch (err) {
             console.error('儲存設定失敗', err);
-            await interaction.reply({ content: '設定儲存失敗，請稍後重試。', ephemeral: true });
+            await interaction.reply({ content: '設定儲存失敗，請稍後重試。', flags: 64 });
         }
         return;
     }
@@ -154,7 +157,7 @@ export const handleInteraction = async (interaction: Interaction) => {
             await interaction.reply({
                 content: `請選擇要對 <@${targetId}> 執行的處置：`,
                 components: [editRow],
-                ephemeral: true,
+                flags: 64,
             });
             return;
         }
@@ -237,7 +240,7 @@ export const handleInteraction = async (interaction: Interaction) => {
         console.error('執行處分按鈕時發生錯誤', error);
         if (!interaction.replied && !interaction.deferred) {
             await interaction
-                .reply({ content: '執行失敗，可能是權限不足或對方身分組較高。', ephemeral: true })
+                .reply({ content: '執行失敗，可能是權限不足或對方身分組較高。', flags: 64 })
                 .catch(() => { });
         }
     }
